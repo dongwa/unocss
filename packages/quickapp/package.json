@@ -1,0 +1,42 @@
+{
+  "name": "@unocss/nuxt",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "build": "unbuild",
+    "stub": "unbuild --stub"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "webpack": "^4 || ^5"
+  },
+  "dependencies": {
+    "@ampproject/remapping": "^2.2.0",
+    "@rollup/pluginutils": "^5.0.1",
+    "@unocss/config": "workspace:*",
+    "@unocss/core": "workspace:*",
+    "magic-string": "^0.26.7",
+    "unplugin": "^0.10.0",
+    "webpack-sources": "^3.2.3"
+  },
+  "devDependencies": {
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-sources": "^3.2.0",
+    "webpack": "^5.74.0"
+  }
+}
