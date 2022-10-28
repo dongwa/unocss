@@ -4,7 +4,8 @@ import type { ResolvedUnpluginOptions, UnpluginOptions } from 'unplugin'
 
 import { createUnplugin } from 'unplugin'
 import WebpackSources from 'webpack-sources'
-import { parse } from '@aiot-toolkit/compiler/lib/style'
+import toolkitStyle from '@aiot-toolkit/compiler/lib/style'
+
 import { getHash } from '../../../shared-integration/src/hash'
 import { createContext } from '../../../shared-integration/src/context'
 import { getPath, isCssId } from '../../../shared-integration/src/utils'
@@ -16,7 +17,7 @@ export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<
 const PLUGIN_NAME = 'unocss:quickapp'
 const UPDATE_DEBOUNCE = 10
 // const LAYER_PLACEHOLDER_RE = /(\\?")?#--unocss--\s*{\s*layer\s*:\s*(.+?);?\s*}/g;
-const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\": {\n {4}\"layer\": \"(__ALL__)\"\n {2}}/g
+const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\":\s*{\s*\"layer\":\s*\"(.+?)?\"\s*}/g
 
 export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Theme>) {
   return config
@@ -115,7 +116,11 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
                     .map(i => resolveLayer(i)).filter((i): i is string => !!i))
                   : result.getLayer(layer) || ''
                 const filePath = path.resolve(ctx.root, 'build', file)
-                const res = parse({ code: css, filePath })
+                // eslint-disable-next-line no-console
+                console.log('css', css)
+                const res = toolkitStyle.parse({ code: css, filePath })
+                // eslint-disable-next-line no-console
+                console.log('result', res.jsonStyle)
                 return JSON.stringify(res.jsonStyle).slice(1, -1)
 
                 // if (!quote)
@@ -169,8 +174,6 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
 }
 
 function getLayer(id: string) {
-  if (id.includes('?'))
-    id = id.split('?')[0]
   let layer = resolveLayer(getPath(id))
   if (!layer) {
     const entry = resolveId(id)
