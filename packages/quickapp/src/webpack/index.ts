@@ -1,18 +1,22 @@
+import path from 'path'
 import type { UserConfig, UserConfigDefaults } from '@unocss/core'
 import type { ResolvedUnpluginOptions, UnpluginOptions } from 'unplugin'
 
 import { createUnplugin } from 'unplugin'
 import WebpackSources from 'webpack-sources'
+import { parse } from '@aiot-toolkit/compiler/lib/style'
 import { getHash } from '../../../shared-integration/src/hash'
 import { createContext } from '../../../shared-integration/src/context'
 import { getPath, isCssId } from '../../../shared-integration/src/utils'
 import { applyTransformers } from '../../../shared-integration/src/transformers'
-import { HASH_PLACEHOLDER_RE, LAYER_MARK_ALL, LAYER_PLACEHOLDER_RE, RESOLVED_ID_RE, getHashPlaceholder, getLayerPlaceholder, resolveId, resolveLayer } from '../../../shared-integration/src/layers'
+import { HASH_PLACEHOLDER_RE, LAYER_MARK_ALL, RESOLVED_ID_RE, getHashPlaceholder, getLayerPlaceholder, resolveId, resolveLayer } from '../../../shared-integration/src/layers'
 
 export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<Theme> {}
 
 const PLUGIN_NAME = 'unocss:quickapp'
 const UPDATE_DEBOUNCE = 10
+// const LAYER_PLACEHOLDER_RE = /(\\?")?#--unocss--\s*{\s*layer\s*:\s*(.+?);?\s*}/g;
+const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\": {\n {4}\"layer\": \"(__ALL__)\"\n {2}}/g
 
 export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Theme>) {
   return config
@@ -110,16 +114,19 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
                   ? result.getLayers(undefined, Array.from(entries)
                     .map(i => resolveLayer(i)).filter((i): i is string => !!i))
                   : result.getLayer(layer) || ''
+                const filePath = path.resolve(ctx.root, 'build', file)
+                const res = parse({ code: css, filePath })
+                return JSON.stringify(res.jsonStyle).slice(1, -1)
 
-                if (!quote)
-                  return css
+                // if (!quote)
+                //   return css
 
-                // the css is in a js file, escaping
-                let escaped = JSON.stringify(css).slice(1, -1)
-                // in `eval()`, escaping twice
-                if (quote === '\\"')
-                  escaped = JSON.stringify(escaped).slice(1, -1)
-                return quote + escaped
+                // // the css is in a js file, escaping
+                // let escaped = JSON.stringify(css).slice(1, -1)
+                // // in `eval()`, escaping twice
+                // if (quote === '\\"')
+                //   escaped = JSON.stringify(escaped).slice(1, -1)
+                // return quote + escaped
               })
               if (replaced)
                 compilation.assets[file] = new WebpackSources.RawSource(code) as any
@@ -162,6 +169,8 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
 }
 
 function getLayer(id: string) {
+  if (id.includes('?'))
+    id = id.split('?')[0]
   let layer = resolveLayer(getPath(id))
   if (!layer) {
     const entry = resolveId(id)
