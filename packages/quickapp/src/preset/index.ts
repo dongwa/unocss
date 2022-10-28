@@ -66,7 +66,7 @@ export const presetQuickapp = (options: PresetQuickappOptions = {}): Preset<Them
   options.preflight = options.preflight ?? true
 
   return {
-    name: '@unocss/preset-mini',
+    name: '@unocss/preset-quickapp',
     theme,
     rules,
     variants: variants(options),
