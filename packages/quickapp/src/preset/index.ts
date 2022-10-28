@@ -1,5 +1,5 @@
 import type { Postprocessor, Preset, PresetOptions } from '@unocss/core'
-import { preflights } from './preflights'
+// import { preflights } from './preflights'
 import { rules } from './rules'
 import type { Theme, ThemeAnimation } from './theme'
 import { theme } from './theme'
@@ -74,7 +74,7 @@ export const presetQuickapp = (options: PresetQuickappOptions = {}): Preset<Them
     postprocess: options.variablePrefix && options.variablePrefix !== 'un-'
       ? VarPrefixPostprocessor(options.variablePrefix)
       : undefined,
-    preflights: options.preflight ? preflights : [],
+    // preflights: options.preflight ? preflights : [],
     prefix: options.prefix,
   }
 }
