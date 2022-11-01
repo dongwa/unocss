@@ -33,6 +33,7 @@
     "@unocss/core": "workspace:*",
     "magic-string": "^0.26.7",
     "unplugin": "^0.10.0",
+    "unplugin-attributify-to-class": "^0.1.16",
     "webpack-sources": "^3.2.3"
   },
   "devDependencies": {

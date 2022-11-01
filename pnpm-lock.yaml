@@ -480,6 +480,7 @@ importers:
       '@unocss/core': workspace:*
       magic-string: ^0.26.7
       unplugin: ^0.10.0
+      unplugin-attributify-to-class: ^0.1.16
       webpack: ^5.74.0
       webpack-sources: ^3.2.3
     dependencies:
@@ -490,6 +491,7 @@ importers:
       '@unocss/core': link:../core
       magic-string: 0.26.7
       unplugin: 0.10.0
+      unplugin-attributify-to-class: 0.1.16
       webpack-sources: 3.2.3
     devDependencies:
       '@types/webpack': 5.28.0
@@ -2538,6 +2540,12 @@ packages:
   /@mdit-vue/types/0.11.0:
     resolution: {integrity: sha512-ygCGP7vFpqS02hpZwEe1uz8cfImWX06+zRs08J+tCZRKb6k+easIaIHFtY9ZSxt7j9L/gAPLDo/5RmOT6z0DPQ==}
     dev: true
+
+  /@meoc/utils/0.1.9:
+    resolution: {integrity: sha512-CIZDdbMHHs8qMllpEE6WMyVTMrjFMQmYcrX25WxN8h+7QZkMcTK5omU6PKjb5d4rSdbrIPVTkvrl1KUByveITA==}
+    dependencies:
+      dayjs: 1.11.6
+    dev: false
 
   /@mrmlnc/readdir-enhanced/2.2.1:
     resolution: {integrity: sha512-bPHp6Ji8b41szTOcaP63VlnbbO5Ny6dwAATtY6JTjh5N2OLrb5Qk/Th5cRkRQhkWCt+EJsYrNB0MiL+Gpn6e3g==}
@@ -7464,6 +7472,10 @@ packages:
     resolution: {integrity: sha512-Vr3mLBA8qWmcuschSLAOogKgQ/Jwxulv3RNE4FXnYWRGujzrRWQI4m12fQqRkwX06C0KanhLr4hK+GydchZsaA==}
     engines: {node: '>= 12'}
     dev: true
+
+  /dayjs/1.11.6:
+    resolution: {integrity: sha512-zZbY5giJAinCG+7AGaw0wIhNZ6J8AhWuSXKvuc1KAyMiRsvGQWqh4L+MomvhdAYjN+lqvVCMq1I41e3YHvXkyQ==}
+    dev: false
 
   /de-indent/1.0.2:
     resolution: {integrity: sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==}
@@ -17850,6 +17862,14 @@ packages:
     engines: {node: '>= 0.8'}
     dev: true
 
+  /unplugin-attributify-to-class/0.1.16:
+    resolution: {integrity: sha512-KdkdtWNH/oaomBSUQMdUzn3fCP8sKoy3tKPIHrCGG9/+ZsKp5TFLIWb+ktMjB4UNzdiddiWYKiFQ37luO9XOGw==}
+    dependencies:
+      '@rollup/pluginutils': 4.2.1
+      unplugin: 0.9.6
+      unplugin-transform-class: 0.1.20
+    dev: false
+
   /unplugin-auto-import/0.11.2_@vueuse+core@9.3.1:
     resolution: {integrity: sha512-1+VwBfn9dtiYv9SQLKP1AvZolUbK9xTVeAT+iOcEk4EHSFUlmIqBVLEKI76cifSQTLOJ3rZyPrEgptf3SZNLlQ==}
     engines: {node: '>=14'}
@@ -17867,6 +17887,14 @@ packages:
       unimport: 0.6.8
       unplugin: 0.9.6
     dev: true
+
+  /unplugin-transform-class/0.1.20:
+    resolution: {integrity: sha512-10a2RAqYMWlh5ARwwqfwN8bJops1y734vTlJ7SgopAfA/gS36MB6u2c7hJGxYJj9QrHxHDtJMRaSOzZG5+3Ppw==}
+    dependencies:
+      '@meoc/utils': 0.1.9
+      '@rollup/pluginutils': 4.2.1
+      unplugin: 0.9.6
+    dev: false
 
   /unplugin-vue-components/0.22.8_vue@3.2.40:
     resolution: {integrity: sha512-Musnwdtr6uj9Zopo4oeh4lp9+fJ2ArXVDzSiZxF4YC9v+pLnasKVKEEAjdXuQQ3u3KtntVw6PCscyAt52eS75g==}
