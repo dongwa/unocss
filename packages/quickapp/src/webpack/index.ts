@@ -6,7 +6,7 @@ import { createUnplugin } from 'unplugin'
 import WebpackSources from 'webpack-sources'
 import toolkitStyle from '@aiot-toolkit/compiler/lib/style'
 
-import { getHash } from '../../../shared-integration/src/hash'
+// import { getHash } from '../../../shared-integration/src/hash'
 import { createContext } from '../../../shared-integration/src/context'
 import { getPath, isCssId } from '../../../shared-integration/src/utils'
 import { applyTransformers } from '../../../shared-integration/src/transformers'
@@ -15,7 +15,7 @@ import { HASH_PLACEHOLDER_RE, LAYER_MARK_ALL, RESOLVED_ID_RE, getHashPlaceholder
 export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<Theme> {}
 
 const PLUGIN_NAME = 'unocss:quickapp'
-const UPDATE_DEBOUNCE = 10
+// const UPDATE_DEBOUNCE = 10
 // const LAYER_PLACEHOLDER_RE = /(\\?")?#--unocss--\s*{\s*layer\s*:\s*(.+?);?\s*}/g;
 const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\":\s*{\s*\"layer\":\s*\"(.+?)?\"\s*}/g
 
@@ -29,13 +29,13 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
 ) {
   return createUnplugin(() => {
     const ctx = createContext<WebpackPluginOptions>(configOrPath as any, defaults)
-    const { uno, tokens, filter, extract, onInvalidate } = ctx
+    const { uno, tokens, filter, extract/** , onInvalidate */ } = ctx
 
-    let timer: any
-    onInvalidate(() => {
-      clearTimeout(timer)
-      timer = setTimeout(updateModules, UPDATE_DEBOUNCE)
-    })
+    // let timer: any
+    // // onInvalidate(() => {
+    // //   clearTimeout(timer)
+    // //   timer = setTimeout(updateModules, UPDATE_DEBOUNCE)
+    // // })
 
     const nonPreTransformers = ctx.uno.config.transformers?.filter(i => i.enforce !== 'pre')
     if (nonPreTransformers?.length) {
@@ -67,6 +67,10 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
           tasks.push(extract(result.code, id))
         return result
       },
+      // buildStart() {
+      //   /** 开始时创建输出css文件 */
+
+      // },
       resolveId(id) {
         const entry = resolveId(id)
         if (entry === id)
@@ -141,33 +145,33 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
       },
     } as Required<ResolvedUnpluginOptions>
 
-    let lastTokenSize = tokens.size
-    async function updateModules() {
-      if (!plugin.__vfsModules)
-        return
+    // const lastTokenSize = tokens.size
+    // async function updateModules() {
+    //   if (!plugin.__vfsModules)
+    //     return
 
-      await Promise.all(tasks)
-      const result = await uno.generate(tokens)
-      if (lastTokenSize === tokens.size)
-        return
+    //   await Promise.all(tasks)
+    //   const result = await uno.generate(tokens)
+    //   if (lastTokenSize === tokens.size)
+    //     return
 
-      lastTokenSize = tokens.size
-      Array.from(plugin.__vfsModules)
-        .forEach((id) => {
-          const path = id.slice(plugin.__virtualModulePrefix.length).replace(/\\/g, '/')
-          const layer = resolveLayer(path)
-          if (!layer)
-            return
-          const code = layer === LAYER_MARK_ALL
-            ? result.getLayers(undefined, Array.from(entries)
-              .map(i => resolveLayer(i)).filter((i): i is string => !!i))
-            : result.getLayer(layer) || ''
+    //   lastTokenSize = tokens.size
+    //   Array.from(plugin.__vfsModules)
+    //     .forEach((id) => {
+    //       const path = id.slice(plugin.__virtualModulePrefix.length).replace(/\\/g, '/')
+    //       const layer = resolveLayer(path)
+    //       if (!layer)
+    //         return
+    //       const code = layer === LAYER_MARK_ALL
+    //         ? result.getLayers(undefined, Array.from(entries)
+    //           .map(i => resolveLayer(i)).filter((i): i is string => !!i))
+    //         : result.getLayer(layer) || ''
 
-          const hash = getHash(code)
-          hashes.set(path, hash)
-          plugin.__vfs.writeModule(id, code)
-        })
-    }
+    //       const hash = getHash(code)
+    //       hashes.set(path, hash)
+    //       plugin.__vfs.writeModule(id, code)
+    //     })
+    // }
 
     return plugin
   }).webpack()
