@@ -43,7 +43,7 @@ export function transformerClass(options: Options = {}): SourceCodeTransformer {
   return {
     name: 'transformer-applet-class',
     idFilter,
-    enforce: 'pre',
+    enforce: 'post',
     transform(code) {
       const newCode = transformCode(code.toString(), options.transformRules)
       code.overwrite(0, code.original.length, newCode)

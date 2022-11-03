@@ -131,7 +131,6 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
                 // eslint-disable-next-line no-console
                 console.log('result', res.jsonStyle)
                 return JSON.stringify(res.jsonStyle).slice(1, -1)
-
                 // if (!quote)
                 //   return css
 
@@ -142,6 +141,8 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
                 //   escaped = JSON.stringify(escaped).slice(1, -1)
                 // return quote + escaped
               })
+              /** 转化代码中不支持的转义class */
+              code = transformCode(code)
               if (replaced)
                 compilation.assets[file] = new WebpackSources.RawSource(code) as any
             }
@@ -190,5 +191,87 @@ function getLayer(id: string) {
       layer = resolveLayer(entry)
   }
   return layer
+}
+
+/**
+ * @desc 去左右空格
+ * @param value - 需要处理的字符串
+ */
+export function trim(value: string) {
+  return value.replace(/(^\s*)|(\s*$)/g, '')
+}
+
+// "classList": [
+//   "p5",
+//   "overflow-auto",
+//   "w-1/3",
+//   "bg-yellow",
+//   "text-center"
+// ],
+
+/**
+ * 获取class
+ */
+export function getClass(code: string) {
+  const matchs: string[][] = []
+  // ux
+  Array.from(code.matchAll(/\"classList\"\s*:\s*\[((?:\n|.)*?)\]/g)).forEach((m) => {
+    const classStr = m[1]
+    const sourceStr = trim(m[0])
+
+    const classArr = [sourceStr]
+    classArr.push(classStr)
+    matchs.push(classArr)
+  })
+  return matchs
+}
+
+// src/utils.ts
+const defaultRules: Record<string, string> = {
+  '.': '-d-',
+  '/': '-s-',
+  ':': '-c-',
+  '%': '-p-',
+  '!': '-e-',
+  '#': '-w-',
+  '(': '-bl-',
+  ')': '-br-',
+  '[': '-fl-',
+  ']': '-fr-',
+  '$': '-r-',
+  // ',': '-co-',
+}
+
+function escapeRegExp(str = '') {
+  return str.replace(/[/.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function createTransformRegExp(rules: Record<string, string>) {
+  return new RegExp(`[${escapeRegExp(Object.keys(rules).join(''))}]`)
+}
+
+export function transformCode(code: string, rules = defaultRules) {
+  const classNames = getClass(code)
+
+  classNames.forEach((c) => {
+    let currentClass = c[0]
+    c.slice(1).forEach((selector) => {
+      currentClass = currentClass.replace(selector, transformEscapESelector(selector, rules))
+    })
+    code = code.replace(c[0], currentClass)
+  })
+
+  return code
+}
+
+export function transformEscapESelector(selector = '', rules = defaultRules): string {
+  const transformRegExp = createTransformRegExp(rules)
+  if (transformRegExp.test(selector)) {
+    for (const transformRule in rules) {
+      const replaceReg = new RegExp(escapeRegExp(`${transformRule}`), 'g')
+      selector = selector.replace(replaceReg, rules[transformRule])
+    }
+  }
+  return selector
 }
 
