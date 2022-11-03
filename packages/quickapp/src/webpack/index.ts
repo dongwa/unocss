@@ -1,4 +1,5 @@
 import path from 'path'
+import { existsSync, writeFileSync } from 'fs'
 import type { UserConfig, UserConfigDefaults } from '@unocss/core'
 import type { ResolvedUnpluginOptions, UnpluginOptions } from 'unplugin'
 
@@ -12,25 +13,28 @@ import { getPath, isCssId } from '../../../shared-integration/src/utils'
 import { applyTransformers } from '../../../shared-integration/src/transformers'
 import { HASH_PLACEHOLDER_RE, LAYER_MARK_ALL, RESOLVED_ID_RE, getHashPlaceholder, getLayerPlaceholder, resolveId, resolveLayer } from '../../../shared-integration/src/layers'
 
-export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<Theme> {}
+export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<Theme> {
+  unoCssOutput?: string
+}
 
 const PLUGIN_NAME = 'unocss:quickapp'
 // const UPDATE_DEBOUNCE = 10
 // const LAYER_PLACEHOLDER_RE = /(\\?")?#--unocss--\s*{\s*layer\s*:\s*(.+?);?\s*}/g;
 const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\":\s*{\s*\"layer\":\s*\"(.+?)?\"\s*}/g
+let OUTPUTCSS = 'src/css/uno.css'
 
 export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Theme>) {
   return config
 }
 
 export function UnoQuickappWebpackPlugin<Theme extends {}>(
-  configOrPath?: WebpackPluginOptions<Theme> | string,
+  configOrPath?: WebpackPluginOptions<Theme>,
   defaults?: UserConfigDefaults,
 ) {
   return createUnplugin(() => {
     const ctx = createContext<WebpackPluginOptions>(configOrPath as any, defaults)
     const { uno, tokens, filter, extract/** , onInvalidate */ } = ctx
-
+    OUTPUTCSS = configOrPath?.unoCssOutput || OUTPUTCSS
     // let timer: any
     // // onInvalidate(() => {
     // //   clearTimeout(timer)
@@ -67,10 +71,11 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
           tasks.push(extract(result.code, id))
         return result
       },
-      // buildStart() {
-      //   /** 开始时创建输出css文件 */
-
-      // },
+      buildStart() {
+        /** 开始时创建uno.css文件 */
+        if (!existsSync(OUTPUTCSS))
+          writeFileSync(OUTPUTCSS, getLayerPlaceholder(LAYER_MARK_ALL))
+      },
       resolveId(id) {
         const entry = resolveId(id)
         if (entry === id)
