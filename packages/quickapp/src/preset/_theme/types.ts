@@ -64,4 +64,7 @@ export interface Theme {
   /** Used to generate CSS variables placeholder in preflight */
   preflightRoot?: Arrayable<string>
   preflightBase?: Record<string, string | number>
+
+  // 快应用转义class 自定义转换规则
+  transformRules?: Record<string, string>
 }

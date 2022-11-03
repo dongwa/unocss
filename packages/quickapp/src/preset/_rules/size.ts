@@ -1,6 +1,7 @@
+import { restoreSelector } from 'unplugin-transform-class/utils'
 import type { Rule } from '@unocss/core'
-import type { Theme } from '../theme'
 import { handler as h, resolveBreakpoints, resolveVerticalBreakpoints } from '../utils'
+import type { Theme } from '../theme'
 
 const sizeMapping: Record<string, string> = {
   h: 'height',
@@ -16,6 +17,7 @@ function getPropName(minmax: string, hw: string) {
 type SizeProps = 'width' | 'height' | 'maxWidth' | 'maxHeight' | 'minWidth' | 'minHeight' | 'inlineSize' | 'blockSize' | 'maxInlineSize' | 'maxBlockSize' | 'minInlineSize' | 'minBlockSize'
 
 function getSizeValue(minmax: string, hw: string, theme: Theme, prop: string) {
+  prop = restoreSelector(prop, theme?.transformRules)
   const str = getPropName(minmax, hw).replace(/-(\w)/g, (_, p) => p.toUpperCase()) as SizeProps
   const v = theme[str]?.[prop]
   if (v != null)

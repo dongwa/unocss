@@ -1,10 +1,10 @@
 import type { Postprocessor, Preset, PresetOptions } from '@unocss/core'
 // import { preflights } from './preflights'
+import { defaultRules, transformEscapESelector } from 'unplugin-transform-class/utils'
 import { rules } from './rules'
 import type { Theme, ThemeAnimation } from './theme'
 import { theme } from './theme'
 import { variants } from './variants'
-
 export { preflights } from './preflights'
 export { theme, colors } from './theme'
 export { parseColor } from './utils'
@@ -59,6 +59,19 @@ export interface PresetQuickappOptions extends PresetOptions {
    * @default true
    */
   preflight?: boolean
+
+  /**
+   * 是否转换class
+   *
+   * @default true
+   */
+  transform?: boolean
+
+  /**
+   * 自定义转换规则
+   * @default https://github.com/MellowCo/unplugin-transform-class#options
+   */
+  transformRules?: Record<string, string>
 }
 
 export const presetQuickapp = (options: PresetQuickappOptions = {}): Preset<Theme> => {
@@ -66,15 +79,24 @@ export const presetQuickapp = (options: PresetQuickappOptions = {}): Preset<Them
   options.attributifyPseudo = options.attributifyPseudo ?? false
   options.preflight = options.preflight ?? true
 
+  options.transform = options.transform ?? true
+  options.transformRules = options.transformRules ?? defaultRules
+
   return {
     name: '@unocss/preset-quickapp',
-    theme,
+    theme: {
+      ...theme,
+      transformRules: options.transformRules,
+    },
     rules,
     variants: variants(options),
     options,
-    postprocess: options.variablePrefix && options.variablePrefix !== 'un-'
-      ? VarPrefixPostprocessor(options.variablePrefix)
-      : undefined,
+    postprocess(css) {
+      if (options.transform)
+        css.selector = transformEscapESelector(css.selector, options.transformRules)
+      if (options.variablePrefix && options.variablePrefix !== 'un-')
+        VarPrefixPostprocessor(options.variablePrefix)
+    },
     // preflights: options.preflight ? preflights : [],
     prefix: options.prefix,
   }
