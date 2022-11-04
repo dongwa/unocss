@@ -1,67 +1,36 @@
 import path from 'path'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
-import type { UserConfig, UserConfigDefaults } from '@unocss/core'
 import type { ResolvedUnpluginOptions, UnpluginOptions } from 'unplugin'
 
 import { createUnplugin } from 'unplugin'
 import WebpackSources from 'webpack-sources'
 import toolkitStyle from '@aiot-toolkit/compiler/lib/style'
-import remToPxPreset from '@unocss/preset-rem-to-px'
-import { presetQuickapp } from '../preset/index'
+
 import { createContext } from '../../../shared-integration/src/context'
 import { getPath, isCssId } from '../../../shared-integration/src/utils'
 import { applyTransformers } from '../../../shared-integration/src/transformers'
 import { HASH_PLACEHOLDER_RE, LAYER_MARK_ALL, RESOLVED_ID_RE, getHashPlaceholder, getLayerPlaceholder, resolveId, resolveLayer } from '../../../shared-integration/src/layers'
-
-export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<Theme> {
-  /** 配置自动转义class的规则 */
-  transformRules?: Record<string, string>
-  /** 配置unocss输出路径 */
-  unoCssOutput?: string
-}
+import type { UnocssQuickappOptions } from './confg'
+import { defaultRules, resolveConfig } from './confg'
 
 const PLUGIN_NAME = 'unocss:quickapp'
 export const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\":\s*{\s*\"layer\":\s*\"(.+?)?\"\s*}/g
 export const defaultInclude = [/\.(ux|[jt]sx|html)($|\?)/]
-let OUTPUTCSS = 'src/css/uno.css'
-let defaultRules: Record<string, string> = {
-  '.': '-d-',
-  '/': '-s-',
-  ':': '-c-',
-  '%': '-p-',
-  '!': '-e-',
-  '#': '-w-',
-  '(': '-bl-',
-  ')': '-br-',
-  '[': '-fl-',
-  ']': '-fr-',
-  '$': '-r-',
-}
 
-export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Theme>) {
+export function defineConfig<Theme extends {}>(config: UnocssQuickappOptions<Theme>) {
   return config
 }
 
 export function UnoCssQuickapp<Theme extends {}>(
-  config?: WebpackPluginOptions<Theme>,
+  _config: Partial<UnocssQuickappOptions<Theme>> = {},
 ) {
   return createUnplugin(() => {
     /** 初始化配置,默认内置所需的presets */
-    OUTPUTCSS = config?.unoCssOutput || OUTPUTCSS
-    defaultRules = config?.transformRules || defaultRules
+    const config = resolveConfig(_config)
+    const ctx = createContext<UnocssQuickappOptions<Theme>>({
+      ...config,
+    })
 
-    const defaultConfig: UserConfigDefaults & { include?: string } = {
-      presets: [remToPxPreset(), presetQuickapp(
-        {
-          transformRules: defaultRules,
-        },
-      )],
-    }
-
-    const ctx = createContext<WebpackPluginOptions>({
-      include: defaultInclude,
-      ...config as any,
-    }, defaultConfig)
     const { uno, tokens, filter, extract/** , onInvalidate */ } = ctx
     const nonPreTransformers = ctx.uno.config.transformers?.filter(i => i.enforce !== 'pre')
     if (nonPreTransformers?.length) {
@@ -84,7 +53,7 @@ export function UnoCssQuickapp<Theme extends {}>(
         return filter('', id) && !id.match(/\.html$/) && !RESOLVED_ID_RE.test(id)
       },
       async transform(code, id) {
-        const result = await applyTransformers(ctx, code, id, 'pre')
+        const result = await applyTransformers(ctx as any, code, id, 'pre')
         if (isCssId(id))
           return result
         if (result == null)
@@ -96,15 +65,15 @@ export function UnoCssQuickapp<Theme extends {}>(
       buildStart() {
         /** 开始时创建uno.css文件 */
         const layer = getLayerPlaceholder(LAYER_MARK_ALL)
-        if (!existsSync(OUTPUTCSS)) {
-          mkdirSync(path.dirname(OUTPUTCSS), { recursive: true })
-          writeFileSync(OUTPUTCSS, layer)
+        if (!existsSync(config.unoCssOutput)) {
+          mkdirSync(path.dirname(config?.unoCssOutput), { recursive: true })
+          writeFileSync(config?.unoCssOutput, layer)
         }
         else {
-          let currentUnoCss = readFileSync(OUTPUTCSS).toString()
+          let currentUnoCss = readFileSync(config?.unoCssOutput).toString()
           if (!currentUnoCss.includes(layer)) {
             currentUnoCss = `${layer}\n${currentUnoCss}`
-            writeFileSync(OUTPUTCSS, currentUnoCss)
+            writeFileSync(config?.unoCssOutput, currentUnoCss)
           }
         }
       },
@@ -161,7 +130,7 @@ export function UnoCssQuickapp<Theme extends {}>(
                 return JSON.stringify(res.jsonStyle).slice(1, -1)
               })
               /** 转化代码中不支持的转义class */
-              code = transformCode(code)
+              code = transformCode(code, config.transformRules)
               if (replaced)
                 compilation.assets[file] = new WebpackSources.RawSource(code) as any
             }
