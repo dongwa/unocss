@@ -1,5 +1,5 @@
 import path from 'path'
-import { existsSync, writeFileSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
 import type { UserConfig, UserConfigDefaults } from '@unocss/core'
 import type { ResolvedUnpluginOptions, UnpluginOptions } from 'unplugin'
 
@@ -73,8 +73,15 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
       },
       buildStart() {
         /** 开始时创建uno.css文件 */
-        if (!existsSync(OUTPUTCSS))
-          writeFileSync(OUTPUTCSS, getLayerPlaceholder(LAYER_MARK_ALL))
+        const layer = getLayerPlaceholder(LAYER_MARK_ALL)
+        if (!existsSync(OUTPUTCSS)) { writeFileSync(OUTPUTCSS, layer) }
+        else {
+          let currentUnoCss = readFileSync(OUTPUTCSS).toString()
+          if (!currentUnoCss.includes(layer)) {
+            currentUnoCss = `${layer}\n${currentUnoCss}`
+            writeFileSync(OUTPUTCSS, currentUnoCss)
+          }
+        }
       },
       resolveId(id) {
         const entry = resolveId(id)
@@ -200,14 +207,6 @@ function getLayer(id: string) {
 export function trim(value: string) {
   return value.replace(/(^\s*)|(\s*$)/g, '')
 }
-
-// "classList": [
-//   "p5",
-//   "overflow-auto",
-//   "w-1/3",
-//   "bg-yellow",
-//   "text-center"
-// ],
 
 /**
  * 获取class
