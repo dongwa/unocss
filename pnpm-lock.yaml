@@ -478,9 +478,11 @@ importers:
       '@types/webpack-sources': ^3.2.0
       '@unocss/config': workspace:*
       '@unocss/core': workspace:*
+      '@unocss/preset-rem-to-px': ^0.46.3
       magic-string: ^0.26.7
       unplugin: ^0.10.0
       unplugin-attributify-to-class: ^0.1.16
+      unplugin-transform-class: ^0.1.20
       webpack: ^5.74.0
       webpack-sources: ^3.2.3
     dependencies:
@@ -489,9 +491,11 @@ importers:
       '@rollup/pluginutils': 5.0.1
       '@unocss/config': link:../config
       '@unocss/core': link:../core
+      '@unocss/preset-rem-to-px': 0.46.3
       magic-string: 0.26.7
       unplugin: 0.10.0
       unplugin-attributify-to-class: 0.1.16
+      unplugin-transform-class: 0.1.20
       webpack-sources: 3.2.3
     devDependencies:
       '@types/webpack': 5.28.0
@@ -3565,6 +3569,16 @@ packages:
       '@typescript-eslint/types': 5.39.0
       eslint-visitor-keys: 3.3.0
     dev: true
+
+  /@unocss/core/0.46.3:
+    resolution: {integrity: sha512-Wcyuw9KlFgxKz/QDJ+bNnQyI0h+LAWOpZWTkRQiDh1OxzLzYrBR3ljhtZe0tymKQRzQqUSpV5iBWOxJ8raJW1w==}
+    dev: false
+
+  /@unocss/preset-rem-to-px/0.46.3:
+    resolution: {integrity: sha512-YymqyzjxNgvxdD16jmy/yKEQ2Th4BYzKDU1clM2erbQgq7yfJ2g/N8fubVNwlWHLMZ5qVbzTa9AiJo8IOVdWwg==}
+    dependencies:
+      '@unocss/core': 0.46.3
+    dev: false
 
   /@vercel/nft/0.22.1:
     resolution: {integrity: sha512-lYYZIoxRurqDOSoVIdBicGnpUIpfyaS5qVjdPq+EfI285WqtZK3NK/dyCkiyBul+X2U2OEhRyeMdXPCHGJbohw==}

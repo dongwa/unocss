@@ -1,5 +1,5 @@
 {
-  "name": "@unocss/quickapp",
+  "name": "unocss-quickapp",
   "version": "0.0.0",
   "description": "",
   "scripts": {
@@ -20,10 +20,10 @@
     "dist"
   ],
   "keywords": [],
-  "author": "",
+  "author": "donglin",
   "license": "ISC",
   "peerDependencies": {
-    "webpack": "^4 || ^5"
+    "webpack": "^5"
   },
   "dependencies": {
     "@aiot-toolkit/compiler": "^1.0.15",
@@ -31,9 +31,11 @@
     "@rollup/pluginutils": "^5.0.1",
     "@unocss/config": "workspace:*",
     "@unocss/core": "workspace:*",
+    "@unocss/preset-rem-to-px": "^0.46.3",
     "magic-string": "^0.26.7",
     "unplugin": "^0.10.0",
     "unplugin-attributify-to-class": "^0.1.16",
+    "unplugin-transform-class": "^0.1.20",
     "webpack-sources": "^3.2.3"
   },
   "devDependencies": {
