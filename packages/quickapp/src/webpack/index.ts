@@ -7,40 +7,60 @@ import { createUnplugin } from 'unplugin'
 import WebpackSources from 'webpack-sources'
 import toolkitStyle from '@aiot-toolkit/compiler/lib/style'
 
-// import { getHash } from '../../../shared-integration/src/hash'
+import remToPxPreset from '@unocss/preset-rem-to-px'
+import { presetQuickapp } from '../preset/index'
 import { createContext } from '../../../shared-integration/src/context'
 import { getPath, isCssId } from '../../../shared-integration/src/utils'
 import { applyTransformers } from '../../../shared-integration/src/transformers'
 import { HASH_PLACEHOLDER_RE, LAYER_MARK_ALL, RESOLVED_ID_RE, getHashPlaceholder, getLayerPlaceholder, resolveId, resolveLayer } from '../../../shared-integration/src/layers'
 
 export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<Theme> {
+  /** 配置自动转义class的规则 */
+  transformRules?: Record<string, string>
+  /** 配置unocss输出路径 */
   unoCssOutput?: string
 }
 
 const PLUGIN_NAME = 'unocss:quickapp'
-// const UPDATE_DEBOUNCE = 10
-// const LAYER_PLACEHOLDER_RE = /(\\?")?#--unocss--\s*{\s*layer\s*:\s*(.+?);?\s*}/g;
 const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\":\s*{\s*\"layer\":\s*\"(.+?)?\"\s*}/g
 let OUTPUTCSS = 'src/css/uno.css'
+let defaultRules: Record<string, string> = {
+  '.': '-d-',
+  '/': '-s-',
+  ':': '-c-',
+  '%': '-p-',
+  '!': '-e-',
+  '#': '-w-',
+  '(': '-bl-',
+  ')': '-br-',
+  '[': '-fl-',
+  ']': '-fr-',
+  '$': '-r-',
+  // ',': '-co-',
+}
 
 export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Theme>) {
   return config
 }
 
 export function UnoQuickappWebpackPlugin<Theme extends {}>(
-  configOrPath?: WebpackPluginOptions<Theme>,
-  defaults?: UserConfigDefaults,
+  configOrPath?: WebpackPluginOptions<Theme> | string,
 ) {
   return createUnplugin(() => {
-    const ctx = createContext<WebpackPluginOptions>(configOrPath as any, defaults)
-    const { uno, tokens, filter, extract/** , onInvalidate */ } = ctx
-    OUTPUTCSS = configOrPath?.unoCssOutput || OUTPUTCSS
-    // let timer: any
-    // // onInvalidate(() => {
-    // //   clearTimeout(timer)
-    // //   timer = setTimeout(updateModules, UPDATE_DEBOUNCE)
-    // // })
+    /** 初始化配置,默认内置所需的presets */
+    OUTPUTCSS = (configOrPath as WebpackPluginOptions)?.unoCssOutput || OUTPUTCSS
+    defaultRules = (configOrPath as WebpackPluginOptions)?.transformRules || defaultRules
+    const defaultConfig: UserConfigDefaults = {
+      // include: 'src/**/*.ux?uxType=page',
+      presets: [remToPxPreset(), presetQuickapp(
+        {
+          transformRules: defaultRules,
+        },
+      )],
+    }
 
+    const ctx = createContext<WebpackPluginOptions>(configOrPath as any, defaultConfig)
+    const { uno, tokens, filter, extract/** , onInvalidate */ } = ctx
     const nonPreTransformers = ctx.uno.config.transformers?.filter(i => i.enforce !== 'pre')
     if (nonPreTransformers?.length) {
       console.warn(
@@ -138,15 +158,6 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
                 // eslint-disable-next-line no-console
                 console.log('result', res.jsonStyle)
                 return JSON.stringify(res.jsonStyle).slice(1, -1)
-                // if (!quote)
-                //   return css
-
-                // // the css is in a js file, escaping
-                // let escaped = JSON.stringify(css).slice(1, -1)
-                // // in `eval()`, escaping twice
-                // if (quote === '\\"')
-                //   escaped = JSON.stringify(escaped).slice(1, -1)
-                // return quote + escaped
               })
               /** 转化代码中不支持的转义class */
               code = transformCode(code)
@@ -157,34 +168,6 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
         })
       },
     } as Required<ResolvedUnpluginOptions>
-
-    // const lastTokenSize = tokens.size
-    // async function updateModules() {
-    //   if (!plugin.__vfsModules)
-    //     return
-
-    //   await Promise.all(tasks)
-    //   const result = await uno.generate(tokens)
-    //   if (lastTokenSize === tokens.size)
-    //     return
-
-    //   lastTokenSize = tokens.size
-    //   Array.from(plugin.__vfsModules)
-    //     .forEach((id) => {
-    //       const path = id.slice(plugin.__virtualModulePrefix.length).replace(/\\/g, '/')
-    //       const layer = resolveLayer(path)
-    //       if (!layer)
-    //         return
-    //       const code = layer === LAYER_MARK_ALL
-    //         ? result.getLayers(undefined, Array.from(entries)
-    //           .map(i => resolveLayer(i)).filter((i): i is string => !!i))
-    //         : result.getLayer(layer) || ''
-
-    //       const hash = getHash(code)
-    //       hashes.set(path, hash)
-    //       plugin.__vfs.writeModule(id, code)
-    //     })
-    // }
 
     return plugin
   }).webpack()
@@ -223,22 +206,6 @@ export function getClass(code: string) {
     matchs.push(classArr)
   })
   return matchs
-}
-
-// src/utils.ts
-const defaultRules: Record<string, string> = {
-  '.': '-d-',
-  '/': '-s-',
-  ':': '-c-',
-  '%': '-p-',
-  '!': '-e-',
-  '#': '-w-',
-  '(': '-bl-',
-  ')': '-br-',
-  '[': '-fl-',
-  ']': '-fr-',
-  '$': '-r-',
-  // ',': '-co-',
 }
 
 function escapeRegExp(str = '') {
