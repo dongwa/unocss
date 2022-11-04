@@ -154,11 +154,7 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
                     .map(i => resolveLayer(i)).filter((i): i is string => !!i))
                   : result.getLayer(layer) || ''
                 const filePath = path.resolve(ctx.root, 'build', file)
-                // eslint-disable-next-line no-console
-                console.log('css', css)
                 const res = toolkitStyle.parse({ code: css, filePath })
-                // eslint-disable-next-line no-console
-                console.log('result', res.jsonStyle)
                 return JSON.stringify(res.jsonStyle).slice(1, -1)
               })
               /** 转化代码中不支持的转义class */
