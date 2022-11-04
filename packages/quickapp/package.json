@@ -5,7 +5,7 @@
   "scripts": {
     "build": "unbuild",
     "stub": "unbuild --stub",
-    "release": "bumpp package.json"
+    "release": "bumpp --no-tag package.json"
   },
   "exports": {
     ".": {
