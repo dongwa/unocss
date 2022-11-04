@@ -6,7 +6,6 @@ import type { ResolvedUnpluginOptions, UnpluginOptions } from 'unplugin'
 import { createUnplugin } from 'unplugin'
 import WebpackSources from 'webpack-sources'
 import toolkitStyle from '@aiot-toolkit/compiler/lib/style'
-
 import remToPxPreset from '@unocss/preset-rem-to-px'
 import { presetQuickapp } from '../preset/index'
 import { createContext } from '../../../shared-integration/src/context'
@@ -22,7 +21,8 @@ export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<
 }
 
 const PLUGIN_NAME = 'unocss:quickapp'
-const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\":\s*{\s*\"layer\":\s*\"(.+?)?\"\s*}/g
+export const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\":\s*{\s*\"layer\":\s*\"(.+?)?\"\s*}/g
+export const defaultInclude = [/\.(ux|[jt]sx|html)($|\?)/]
 let OUTPUTCSS = 'src/css/uno.css'
 let defaultRules: Record<string, string> = {
   '.': '-d-',
@@ -36,7 +36,6 @@ let defaultRules: Record<string, string> = {
   '[': '-fl-',
   ']': '-fr-',
   '$': '-r-',
-  // ',': '-co-',
 }
 
 export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Theme>) {
@@ -44,14 +43,14 @@ export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Them
 }
 
 export function UnoQuickappWebpackPlugin<Theme extends {}>(
-  configOrPath?: WebpackPluginOptions<Theme> | string,
+  config?: WebpackPluginOptions<Theme>,
 ) {
   return createUnplugin(() => {
     /** 初始化配置,默认内置所需的presets */
-    OUTPUTCSS = (configOrPath as WebpackPluginOptions)?.unoCssOutput || OUTPUTCSS
-    defaultRules = (configOrPath as WebpackPluginOptions)?.transformRules || defaultRules
-    const defaultConfig: UserConfigDefaults = {
-      // include: 'src/**/*.ux?uxType=page',
+    OUTPUTCSS = config?.unoCssOutput || OUTPUTCSS
+    defaultRules = config?.transformRules || defaultRules
+
+    const defaultConfig: UserConfigDefaults & { include?: string } = {
       presets: [remToPxPreset(), presetQuickapp(
         {
           transformRules: defaultRules,
@@ -59,7 +58,10 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
       )],
     }
 
-    const ctx = createContext<WebpackPluginOptions>(configOrPath as any, defaultConfig)
+    const ctx = createContext<WebpackPluginOptions>({
+      include: defaultInclude,
+      ...config as any,
+    }, defaultConfig)
     const { uno, tokens, filter, extract/** , onInvalidate */ } = ctx
     const nonPreTransformers = ctx.uno.config.transformers?.filter(i => i.enforce !== 'pre')
     if (nonPreTransformers?.length) {
