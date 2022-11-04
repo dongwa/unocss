@@ -1,5 +1,5 @@
 import path from 'path'
-import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import type { UserConfig, UserConfigDefaults } from '@unocss/core'
 import type { ResolvedUnpluginOptions, UnpluginOptions } from 'unplugin'
 
@@ -96,7 +96,10 @@ export function UnoQuickappWebpackPlugin<Theme extends {}>(
       buildStart() {
         /** 开始时创建uno.css文件 */
         const layer = getLayerPlaceholder(LAYER_MARK_ALL)
-        if (!existsSync(OUTPUTCSS)) { writeFileSync(OUTPUTCSS, layer) }
+        if (!existsSync(OUTPUTCSS)) {
+          mkdirSync(path.dirname(OUTPUTCSS), { recursive: true })
+          writeFileSync(OUTPUTCSS, layer)
+        }
         else {
           let currentUnoCss = readFileSync(OUTPUTCSS).toString()
           if (!currentUnoCss.includes(layer)) {
