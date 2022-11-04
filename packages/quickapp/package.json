@@ -20,8 +20,17 @@
   "files": [
     "dist"
   ],
-  "keywords": [],
+  "keywords": ["unocss","quickapp","快应用","原子化CSS","CSS","Windi","Tailwind","Bootstrap"],
   "author": "donglin",
+  "homepage": "https://github.com/dongwa/unocss/tree/dev/packages/quickapp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dongwa/unocss.git",
+    "directory": "packages/preset-wind"
+  },
+  "bugs": {
+    "url": "https://github.com/dongwa/unocss/issues"
+  },
   "license": "ISC",
   "peerDependencies": {
     "webpack": "^5"
