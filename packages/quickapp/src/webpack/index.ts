@@ -13,9 +13,10 @@ import { HASH_PLACEHOLDER_RE, LAYER_MARK_ALL, RESOLVED_ID_RE, getHashPlaceholder
 import type { UnocssQuickappOptions } from './confg'
 import { defaultRules, resolveConfig } from './confg'
 
+export * from './confg'
+
 const PLUGIN_NAME = 'unocss:quickapp'
 export const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\":\s*{\s*\"layer\":\s*\"(.+?)?\"\s*}/g
-export const defaultInclude = [/\.(ux|[jt]sx|html)($|\?)/]
 
 export function defineConfig<Theme extends {}>(config: UnocssQuickappOptions<Theme>) {
   return config
