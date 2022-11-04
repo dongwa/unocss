@@ -42,7 +42,7 @@ export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Them
   return config
 }
 
-export function UnoQuickappWebpackPlugin<Theme extends {}>(
+export function UnoCssQuickapp<Theme extends {}>(
   config?: WebpackPluginOptions<Theme>,
 ) {
   return createUnplugin(() => {

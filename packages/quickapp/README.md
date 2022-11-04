@@ -16,12 +16,12 @@ npm i -D unocss-quickapp
 
 ```ts
 // quickapp.config.js
-const { UnoQuickappWebpackPlugin } = require('unocss-quickapp')
+const { UnoCssQuickapp } = require('unocss-quickapp')
 
 module.exports = {
   webpack: {
     plugins: [
-      UnoQuickappWebpackPlugin()
+      UnoCssQuickapp()
     ],
   }
 }
@@ -59,12 +59,12 @@ const defaultRules: Record<string, string> = {
 如果有需要您可以通过配置项自定义此规则：
 ```ts
 // quickapp.config.js
-const { UnoQuickappWebpackPlugin } = require('unocss-quickapp')
+const { UnoCssQuickapp } = require('unocss-quickapp')
 
 module.exports = {
   webpack: {
     plugins: [
-      UnoQuickappWebpackPlugin({
+      UnoCssQuickapp({
         transformRules: {
           '.': '-a-',
           '/': '-b',
