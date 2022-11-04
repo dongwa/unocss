@@ -4,7 +4,7 @@
 
 这个插件中默认预设了两个 preset：
 1. [preset-rem-to-px](https://github.com/unocss/unocss/tree/main/packages/preset-rem-to-px) 因为快应用中不支持 rem 单位
-2. presetQuickapp 基于 [preset-mini](https://github.com/unocss/unocss/tree/main/packages/preset-mini) 修改的 rules 使其兼容快应用，支持的css规则参考 [windicss](https://windicss.org/guide/) 文档
+2. presetQuickapp，内置的兼容快应用的预设规则，支持的 css 规则参考 [windicss](https://windicss.org/guide/) 文档
 
 > 注意上述两个 preset 默认启用，您不需要手动引入它们，如果您想配置自定义的 preset，请使用 presets 配置项
 
