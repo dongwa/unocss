@@ -1,7 +1,7 @@
 import type { CSSEntries, CSSObject, DynamicMatcher, ParsedColorValue, Rule, RuleContext, VariantContext } from '@unocss/core'
 import { isString, toArray } from '@unocss/core'
 import type { Theme } from '../theme'
-import { /** colorOpacityToString, */colorToString, parseCssColor } from './colors'
+import { colorOpacityToString, colorToString, parseCssColor } from './colors'
 import { handler as h } from './handlers'
 import { directionMap, globalKeywords } from './mappings'
 
@@ -160,21 +160,19 @@ export function colorResolver(property: string, varName: string, shouldPass?: (c
     if (!data)
       return
 
-    const { alpha, color/** , cssColor */ } = data
+    const { alpha, color, cssColor } = data
 
     const css: CSSObject = {}
-    // if (cssColor) {
-    //   if (alpha != null) {
-    //     css[property] = colorToString(cssColor, alpha)
-    //   }
-    //   else {
-    //     css[`--un-${varName}-opacity`] = colorOpacityToString(cssColor)
-    //     css[property] = colorToString(cssColor, `var(--un-${varName}-opacity)`)
-    //   }
-    // }
-    // else
-    if (color)
-      css[property] = colorToString(color, alpha)
+    if (cssColor) {
+      if (alpha != null) {
+        css[property] = colorToString(cssColor, alpha)
+      }
+      else {
+        // css[`--un-${varName}-opacity`] = colorOpacityToString(cssColor)
+        css[property] = colorToString(cssColor, colorOpacityToString(cssColor))
+      }
+    }
+    else if (color) { css[property] = colorToString(color, alpha) }
 
     if (shouldPass?.(css) !== false)
       return css

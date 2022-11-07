@@ -64,16 +64,16 @@ const borderColorResolver = (direction: string) => ([, body]: string[], theme: T
     }
     if (direction === '') {
       return {
-        '--un-border-opacity': colorOpacityToString(cssColor),
-        'border-color': colorToString(cssColor, 'var(--un-border-opacity)'),
+        // '--un-border-opacity': colorOpacityToString(cssColor),
+        'border-color': colorToString(cssColor, colorOpacityToString(cssColor)),
       }
     }
     else {
       return {
         // Separate this return since if `direction` is an empty string, the first key will be overwritten by the second.
-        '--un-border-opacity': colorOpacityToString(cssColor),
-        [`--un-border${direction}-opacity`]: 'var(--un-border-opacity)',
-        [`border${direction}-color`]: colorToString(cssColor, `var(--un-border${direction}-opacity)`),
+        // '--un-border-opacity': colorOpacityToString(cssColor),
+        // [`--un-border${direction}-opacity`]: 'var(--un-border-opacity)',
+        [`border${direction}-color`]: colorToString(cssColor, colorOpacityToString(cssColor)),
       }
     }
   }
