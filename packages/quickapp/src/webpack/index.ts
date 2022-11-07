@@ -168,15 +168,25 @@ export function trim(value: string) {
 export function getClass(code: string) {
   const matchs: string[][] = []
   // ux
-  Array.from(code.matchAll(/\"classList\"\s*:\s*\[((?:\n|.)*?)\]/g)).forEach((m) => {
+  Array.from(code.matchAll(/\"classList\"\s*:\s*(?:function\s*\(\)\s*\{return)?\s*\[((?:\n|.)*?)\]/g)).forEach((m) => {
     const classStr = m[1]
     const sourceStr = trim(m[0])
 
-    const classArr = [sourceStr]
-    classArr.push(classStr)
+    let classArr = [sourceStr]
+    classArr = classArr.concat(getArrClass(classStr))
+    // classArr.push(classStr)
     matchs.push(classArr)
   })
   return matchs
+}
+
+export function getArrClass(className: string) {
+  // [
+  //   title === '2.3' ? 'font-$font-name bg-teal-200:55' :'tracking-[2/5]',
+  //   isFont ? 'font-$font-name' : 'tracking-[2/5]'
+  // ]
+  // => ['font-$font-name bg-teal-200:55', 'tracking-[2/5]','font-$font-name', 'tracking-[2/5]']
+  return Array.from(className.matchAll(/\'(.*?)\'/g)).map(v => v[1])
 }
 
 function escapeRegExp(str = '') {
