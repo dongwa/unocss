@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { getClass, transformCode, transformEscapESelector } from '../src/webpack'
+import { getClass, transformCode, transformEscapESelector } from '../src/webpack/transform'
 
 describe('transformer', () => {
   test('transformEscapESelector', () => {
@@ -41,5 +41,17 @@ describe('transformer', () => {
     `)
     const res = transformCode(test2.toString())
     expect(res).toMatchInlineSnapshot('"\\"classList\\": function () {return [\'w-20\', \'h-20\', \'border-1\', \'border-gray-300\', \'text-center\', \'content-center\', \'focus-c-bg-gray-500\', this.getClass()]}"')
+  })
+
+  test('class', () => {
+    const test = `"classList": [
+      "focus:border-gray-300"
+    ],`
+    const res = transformCode(test)
+    expect(res).toMatchInlineSnapshot(`
+      "\\"classList\\": [
+            \\"focus-c-border-gray-300\\"
+          ],"
+    `)
   })
 })
