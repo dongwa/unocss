@@ -8,7 +8,7 @@ import { variants } from './variants'
 export { preflights } from './preflights'
 export { theme, colors } from './theme'
 export { parseColor } from './utils'
-export { transformerQuickappAttributify, transformerClass } from './transformer'
+export { transformerQuickappAttributify, transformerClass, transformerDirectives } from './transformer'
 
 export type { ThemeAnimation, Theme }
 

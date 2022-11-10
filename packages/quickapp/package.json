@@ -51,6 +51,7 @@
     "@unocss/config": "workspace:*",
     "@unocss/core": "workspace:*",
     "@unocss/preset-rem-to-px": "^0.46.3",
+    "@unocss/transformer-directives": "^0.46.4",
     "magic-string": "^0.26.7",
     "unplugin": "^0.10.0",
     "unplugin-attributify-to-class": "^0.1.16",

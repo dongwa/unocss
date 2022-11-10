@@ -38,7 +38,11 @@ module.exports = {
 
 ## 说明
 ### 自动转化带转义字符的 CSS 类名
-由于快应用不支持在 class 中使用一些需要转义的字符，所以 unocss-quickapp 会将类似 `w-1/2` 之类的带有转义字符的 CSS 类名在编译时自动转化。默认的转化规则如下：
+由于快应用不支持在 class 中使用一些需要转义的字符，所以 unocss-quickapp 会将类似 `w-1/2` 之类的带有转义字符的 CSS 类名在编译时自动转化。
+
+⚠️注意：**目前还不支持转义js中的带有转义字符的 CSS 类名**。
+
+默认的转化规则如下：
 
 ``` ts
 const defaultRules: Record<string, string> = {
@@ -75,6 +79,10 @@ module.exports = {
   }
 }
 ```
+
+## 待办
+* 🚧(进行中) 支持 `@apply`
+* 🚧(进行中) 支持在js中的书写带转义字符的原子化CSS
 ## License
 
 MIT License &copy; 2022-PRESENT [donglin](https://github.com/dongwa)

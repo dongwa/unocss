@@ -1,6 +1,6 @@
 import type { UserConfig } from '@unocss/core'
 import remToPxPreset from '@unocss/preset-rem-to-px'
-import { presetQuickapp } from '../preset/index'
+import { presetQuickapp, transformerDirectives } from '../preset/index'
 
 export const defaultOutput = 'src/css/uno.css'
 export const defaultInclude = [/\.(ux|[jt]sx|html)($|\?)/]
@@ -30,6 +30,11 @@ export function resolveConfig<Theme extends {}>(config: Partial<UnocssQuickappOp
     include: defaultInclude,
     unoCssOutput: defaultOutput,
     transformRules: defaultRules,
+    transformers: [transformerDirectives(
+      {
+        enforce: 'pre',
+      },
+    )],
     presets: [remToPxPreset() as any, presetQuickapp(
       {
         transformRules: defaultRules,

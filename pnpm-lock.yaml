@@ -479,6 +479,7 @@ importers:
       '@unocss/config': workspace:*
       '@unocss/core': workspace:*
       '@unocss/preset-rem-to-px': ^0.46.3
+      '@unocss/transformer-directives': ^0.46.4
       magic-string: ^0.26.7
       unplugin: ^0.10.0
       unplugin-attributify-to-class: ^0.1.16
@@ -492,6 +493,7 @@ importers:
       '@unocss/config': link:../config
       '@unocss/core': link:../core
       '@unocss/preset-rem-to-px': 0.46.3
+      '@unocss/transformer-directives': 0.46.4
       magic-string: 0.26.7
       unplugin: 0.10.0
       unplugin-attributify-to-class: 0.1.16
@@ -3574,10 +3576,21 @@ packages:
     resolution: {integrity: sha512-Wcyuw9KlFgxKz/QDJ+bNnQyI0h+LAWOpZWTkRQiDh1OxzLzYrBR3ljhtZe0tymKQRzQqUSpV5iBWOxJ8raJW1w==}
     dev: false
 
+  /@unocss/core/0.46.4:
+    resolution: {integrity: sha512-pLWJ/QgRW1DT1m0Y/7IyX7tURi/1fJ0T17jygH+iMGfwOJVFigkqxstTbWknuVFqc1rCH+pO20bI5k0r3xvIPA==}
+    dev: false
+
   /@unocss/preset-rem-to-px/0.46.3:
     resolution: {integrity: sha512-YymqyzjxNgvxdD16jmy/yKEQ2Th4BYzKDU1clM2erbQgq7yfJ2g/N8fubVNwlWHLMZ5qVbzTa9AiJo8IOVdWwg==}
     dependencies:
       '@unocss/core': 0.46.3
+    dev: false
+
+  /@unocss/transformer-directives/0.46.4:
+    resolution: {integrity: sha512-ePw4E6beBVtogf7KFysDFvIqd1EAsb1nHs5b5W5JlKTcHySSZIY0neDhN6sD32PRfmQgkgTbR2Cu4XM6u/zBjA==}
+    dependencies:
+      '@unocss/core': 0.46.4
+      css-tree: 2.2.1
     dev: false
 
   /@vercel/nft/0.22.1:
