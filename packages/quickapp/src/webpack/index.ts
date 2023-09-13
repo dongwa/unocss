@@ -18,6 +18,7 @@ export * from './confg'
 
 const PLUGIN_NAME = 'unocss:quickapp'
 export const LAYER_PLACEHOLDER_RE = /(\")#--unocss--\":\s*{\s*\"layer\":\s*\"(.+?)?\"\s*}/g
+export const VELA_PLACEHOLDER_RE = /\[\s*\[\s*\[\s*(\d+)\s*,\s*"(?:[^"\\]|\\.)+"\s*\]\s*\]\s*,\s*\{\s*"layer"\s*:\s*"(__ALL__)"\s*\}\s*\]/g
 
 export function defineConfig<Theme extends {}>(config: UnocssQuickappOptions<Theme>) {
   return config
@@ -121,6 +122,7 @@ export function UnoCssQuickapp<Theme extends {}>(
               let code = compilation.assets[file].source().toString()
               let replaced = false
               code = code.replace(HASH_PLACEHOLDER_RE, '')
+              // quickapp
               code = code.replace(LAYER_PLACEHOLDER_RE, (_, quote, layer) => {
                 replaced = true
                 const css = layer === LAYER_MARK_ALL
@@ -131,6 +133,29 @@ export function UnoCssQuickapp<Theme extends {}>(
                 const res = toolkitStyle.parse({ code: css, filePath })
                 return JSON.stringify(res.jsonStyle).slice(1, -1)
               })
+              // vela
+              code = code.replace(LAYER_PLACEHOLDER_RE, (_, quote, layer) => {
+                replaced = true
+                const css = layer === LAYER_MARK_ALL
+                  ? result.getLayers(undefined, Array.from(entries)
+                    .map(i => resolveLayer(i)).filter((i): i is string => !!i))
+                  : result.getLayer(layer) || ''
+                const filePath = path.resolve(ctx.root, 'build', file)
+                const res = toolkitStyle.parse({ code: css, filePath })
+                const str = Object.keys(res.jsonStyle).map((classNameKey) => {
+                  return `[
+                   [
+                     [
+                       0,
+                       "${classNameKey.slice(1)}"
+                     ]
+                   ],
+                  ${JSON.stringify(res.jsonStyle[classNameKey])}
+                 ]`
+                })
+                return `${str}`
+              })
+
               /** 转化代码中不支持的转义class */
               code = transformCode(code, config.transformRules)
               if (replaced)
