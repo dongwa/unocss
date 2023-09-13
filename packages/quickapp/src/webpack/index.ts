@@ -134,7 +134,7 @@ export function UnoCssQuickapp<Theme extends {}>(
                 return JSON.stringify(res.jsonStyle).slice(1, -1)
               })
               // vela
-              code = code.replace(LAYER_PLACEHOLDER_RE, (_, quote, layer) => {
+              code = code.replace(VELA_PLACEHOLDER_RE, (_, quote, layer) => {
                 replaced = true
                 const css = layer === LAYER_MARK_ALL
                   ? result.getLayers(undefined, Array.from(entries)
